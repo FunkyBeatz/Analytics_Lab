@@ -82,11 +82,15 @@ ingress:
 
 6. Run the tunnel
 ```yaml
-
+sudo cloudflared tunnel run umami
 ```
-
-
-
+7. Install as a service (for auto-start)
+```yaml
+sudo cloudflared service install
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
+```
+---
 
 ## docker-compose.yml
 ```yaml
@@ -119,28 +123,28 @@ volumes:
 
 ```
 
-## Cloudflare Zero Trust Setup
+## 2. Cloudflare Zero Trust Setup
 
-Application Name: Analytics
+To protect the analytics dashboard, I configured Cloudflare Access Policies.
 
-Subdomain: `analytics.example.x`
+### Goals
 
-Session Duration: 24 hours
+- Allow the frontend site to call `/script.js` & `/api/*` without login (tracking must work for all visitors).
 
-## Hostnames
+- Restrict the Umami dashboard (`/`) to only one email account.
 
-`/` → Protected by login policy
+- Block everyone else instantly.
 
-`/script.js` → Bypassed (for global tracking)
-
-`/api/*` → Bypassed (for event collection)
+### Configuration
 
 
-## Policies
-Order	Name	Action	Rule
-1	Analytics Script/API	Bypass	Include: Everyone
-2	Only myself can login	Allow	Emails: example@example.x
-3	Deny all others	Block	Include: Everyone
+
+
+
+
+
+
+
 
 # CSP Fix
 Umami script was blocked by the server’s Content Security Policy.
@@ -164,7 +168,6 @@ scriptSrc: [
 ]
 ```
 
-## Troubleshooting Log
 ## Troubleshooting
 
 | Problem | Error Message | Cause | Solution |
